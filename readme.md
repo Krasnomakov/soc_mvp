@@ -1,31 +1,61 @@
-This repository contains Streamlit application demonstrator of Security Operations Center. 
+# Security Operations Center (SOC) Dashboard
 
-It is a one student semester project at Fontys ICT Delta. 
+[![License: CC BY-NC-ND 4.0](https://img.shields.io/badge/License-CC_BY--NC--ND_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-nc-nd/4.0/)
+[![Streamlit](https://img.shields.io/badge/Streamlit-FF4B4B?style=flat&logo=streamlit&logoColor=white)](https://streamlit.io/)
+[![Python](https://img.shields.io/badge/Python-3.x-blue.svg)](https://www.python.org/)
 
-The project was part time in parallel with two other ICT projects. 
+A Streamlit-based Security Operations Center demonstrator developed as a semester project at Fontys ICT Delta.
+
+## 📋 Overview
+
+This project implements a Security Operations Center dashboard using Streamlit, designed to visualize and analyze security data. The application provides real-time monitoring capabilities and threat intelligence integration.
+
+## 🚀 Features
+
+- Interactive security dashboard
+- Real-time monitoring
+- Threat intelligence integration
+- Custom graph generation
+- Network device monitoring
+
+## 🔧 Prerequisites
+
+- Python 3.x
+- Network with at least two devices (host and target)
+- SIEM and IDS setup
+
+## 🛠️ Installation
+
+Detailed installation and setup instructions can be found in the `my_app` directory.
+
+## 📚 Documentation
+
+The graph generation code is based on research available at:
+[The Universal Matrix Visualizer - From Logic to Computer Algorithm](https://www.researchgate.net/publication/388502572_The_Universal_Matrix_Visualizer_-_From_logic_to_Computer_Algorithm)
+
+## ⚠️ Important Note
+
+The repository does not include `um_gen_metal.py` or `um_gen.py` files required for graph generation. To access these files and set up the complete SOC environment with graph generation and threat intelligence capabilities, please create an issue to request access.
+
+## 🤝 Contributing
+
+We welcome contributions! Feel free to:
+1. Fork the repository
+2. Create your feature branch
+3. Develop your custom visualizations using the logic from the research paper
+4. Submit a pull request
+
+## 📝 License
+
+This project is licensed under the [CC BY-NC-ND 4.0](https://creativecommons.org/licenses/by-nc-nd/4.0/) License.
+
+## 📞 Contact
+
+For any questions or support, please create an issue in this repository.
 
 ---
 
-The repository doesn't contain um_gen_metal.py or um_gen.py files necessary to generate graphs. 
-
-If you want to actually set up the SOC and use our dashboard to generate graphs and use thret intelligence for investigating, reach out for the file access - create an issue.
-
-We would welcome your input. 
-
-
-The graph geenration code is based on research available at: 
-
-https://www.researchgate.net/publication/388502572_The_Universal_Matrix_Visualizer_-_From_logic_to_Computer_Algorithm
-
-Use the logic from from the paper to develop your own custom visualizations. Make your branch and pull request. 
-
----
-
-Meanwhile, if you have a network with at least two devices capable to act as host and target you can follow initial steps at Getting started guide. 
-
-Set up SIEM, IDS and deploy Agents. 
-
-Find detailed Installation and Getting Started information inside my_app. 
-
-License CC BY-NC-ND 4.0
+<div align="center">
+  <sub>Built with ❤️ at Fontys ICT Delta</sub>
+</div>
 

@@ -10,9 +10,14 @@ from collections import deque
 
 # Visualization dependencies
 import networkx as nx
-import matplotlib.pyplot as plt  # used if um_gen_metal is available
+import matplotlib.pyplot as plt  # initially used with um_gen_metal, now replaced with plotly
 import plotly.graph_objects as go
 import streamlit as st # Added for caching
+
+# -----------------------------------------------------------------------------
+# NOTE! um_gen_metal.py or um_gen.py are not provided in this repository. Add an issue to get access to the files. 
+# following code and comments are valid only if um_gen_metal.py or um_gen.py is available.
+# -----------------------------------------------------------------------------
 
 # -----------------------------------------------------------------------------
 # Try to load the user's fractal‑graph helper `um_gen_metal`. If it isn't on the

@@ -340,7 +340,7 @@ Advanced Persistent Threat (APT) campaigns are long‑running, stealthy attacks.
 docker exec caldera python /opt/caldera/scripts/attack_launch_script.py
 ```
 
-> **Warning:** Run the emulator only in disposable lab environments.
+> **Warning:** Run the emulator only in disposable lab environments. Actual script is not provided in this repo. Leave an issue for access request.
 
 Use Wazuh dashboards and Blue agents to monitor and respond.
 

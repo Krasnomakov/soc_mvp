@@ -37,6 +37,8 @@ The graph generation code is based on research available at:
 
 The repository does not include `um_gen_metal.py` or `um_gen.py` files required for graph generation. To access these files and set up the complete SOC environment with graph generation and threat intelligence capabilities, please create an issue to request access.
 
+Caldera auto-launcher and groupd data ingestion scripts are not included. Leave in issue if you want to try automated APT.
+
 ## 🤝 Contributing
 
 We welcome contributions! Feel free to:

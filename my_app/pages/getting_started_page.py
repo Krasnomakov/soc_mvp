@@ -307,6 +307,7 @@ st.markdown("---")
 
 # Step 11
 st.header("Step 11: Emulate APT")
+st.note("auto_launcher script is not provided in this repository. Add an issue to get access to the file.")
 st.write("Advanced Persistent Threat (APT) is a type of cyber attack that is designed to gain unauthorized access to a system or network. APTs are typically carried out by sophisticated attackers who use a combination of techniques to gain access to a target system.")
 st.markdown("Make sure your agents are deployed. You can use **Caldera Emulator** in the left vertical menu of SOC dashboard. Then run a script that will launch APT similar to known groups. Simply enter a group name and run the script. It will use Caldera's API and launch the sophisticated attack.")
 st.code("Use this  script: <attack_launch_script>")

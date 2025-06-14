@@ -33,7 +33,7 @@ The dashboard helps in monitoring, analyzing, and responding to security events 
   - [Step 11: Emulate APT](#step-11-emulate-apt)
   - [Step 12: Exercise and keep the SOC alive](#step-12-exercise-and-keep-the-soc-alive)
 
-#Installation
+# Installation
 
 ## Prerequisites
 - Python 3.8 or higher

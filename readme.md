@@ -56,6 +56,6 @@ For any questions or support, please create an issue in this repository.
 ---
 
 <div align="center">
-  <sub>Built with ❤️ at Fontys ICT Delta</sub>
+  <sub>Built at Fontys ICT Delta</sub>
 </div>
 

@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <!-- Load Streamlit Component JS so window.Streamlit API is available -->
+    <script src="https://unpkg.com/@streamlit/component-lib@1.5.0/dist/index.js"></script>
+</head>
+<body>
+    <div id="caseModal" style="display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background-color: rgba(0,0,0,0.4); align-items: center; justify-content: center;">
+        <div style="background-color: #fefefe; padding: 20px; border: 1px solid #888; width: 80%; max-width: 700px; border-radius: 8px; box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2); max-height: 85vh; overflow-y: auto;">
+            <h2>Alert Details</h2>
+            <h4>Node Data:</h4>
+            <div id="modalNodeData" style="background-color: #f0f0f0; border-radius: 4px; padding: 10px; white-space: pre-wrap; font-family: monospace;"></div>
+            <br>
+            <div style="background-color: #e7f3ff; padding: 15px; border-left: 4px solid #2196F3; margin: 10px 0;">
+                <strong>💡 To save this alert:</strong><br>
+                Close this dialog and use the alert buttons below the graph to load the data into the case form.
+            </div>
+            <button id="cancelCaseBtn" style="padding: 10px 20px; background-color: #f44336; color: white; border: none; border-radius: 4px; cursor: pointer; float: right;">Cancel</button>
+        </div>
+    </div>
+    <div id="graph_container_wrapper" style="position: relative; width:100%; height:600px;">
+        <div id="background_div" style="position: absolute; top: 0; left: 0; width:100%; height:100%; background-color: white;"></div>
+        <div id="foreground_plotly_div" style="position: absolute; top: 0; left: 0; width:100%; height:100%;"></div>
+    </div>
+    
+    <script src="https://cdn.plot.ly/plotly-2.32.0.min.js"></script>
+    <script>
+      window.addEventListener('load', () => {
+        // Utility: wait until window.Streamlit is available, then run the callback.
+        function waitForStreamlit(cb, retries = 200, delay = 50) {
+            if (window.Streamlit) {
+                try { cb(); } catch (e) { console.error('Streamlit callback error:', e); }
+            } else if (retries > 0) {
+                setTimeout(() => waitForStreamlit(cb, retries - 1, delay), delay);
+            } else {
+                console.warn('waitForStreamlit: Streamlit object was not found after multiple retries.');
+            }
+        }
+        
+        var foregroundFigData = {js_foreground_fig_placeholder};
+        var currentGraphAlertData = {js_graph_source_items};
+        var foregroundDiv = document.getElementById('foreground_plotly_div');
+        var currentGraphGlobalIDs = []; 
+        var selectedGlobalIDs = [];
+
+        const modal = document.getElementById('caseModal');
+        const modalNodeDataEl = document.getElementById('modalNodeData');
+        const cancelCaseBtn = document.getElementById('cancelCaseBtn');
+        let activeNodeDataForModal = null;
+
+        function showModal(nodeData) {
+            console.log("DEBUG: 2. Data from node accessed.", nodeData);
+            activeNodeDataForModal = nodeData;
+            let displayString;
+            try {
+                displayString = JSON.stringify(JSON.parse(nodeData), null, 2);
+            } catch (e) {
+                displayString = nodeData;
+            }
+            modalNodeDataEl.textContent = displayString;
+            modal.style.display = 'flex';
+            
+            // Extract alert ID and highlight corresponding button directly
+            let alertId = null;
+            try {
+                const parsed = JSON.parse(nodeData);
+                alertId = parsed.id;
+                console.log("DEBUG: ALERT_ID - Raw alert ID from node data:", alertId);
+                if (alertId) {
+                    console.log("DEBUG: ALERT_ID - Alert ID to search for:", alertId);
+                    highlightMatchingButton(alertId);
+                } else {
+                    console.log("DEBUG: ALERT_ID - No alert ID found in node data");
+                }
+            } catch (e) {
+                console.warn("Failed to parse node data for alert ID:", e);
+            }
+        }
+
+        function hideModal() {
+            modal.style.display = 'none';
+            activeNodeDataForModal = null;
+            console.log("DEBUG: HIGHLIGHT - Clearing button highlights (modal closed)");
+            clearButtonHighlights();
+        }
+
+        function highlightMatchingButton(targetAlertId) {
+            console.log("DEBUG: HIGHLIGHT - Starting to highlight button with alert ID:", targetAlertId);
+            // Clear any existing highlights first
+            clearButtonHighlights();
+            
+            console.log("DEBUG: HIGHLIGHT - Looking for buttons containing alert ID:", targetAlertId);
+            
+            // First, let's check if we can access the parent document at all
+            console.log("DEBUG: EXPLORE - Can access parent?", !!parent);
+            console.log("DEBUG: EXPLORE - Can access parent.document?", !!parent.document);
+            
+            // Let's try to find ALL buttons and see what we get
+            const allButtons = parent.document.querySelectorAll('button');
+            console.log("DEBUG: EXPLORE - Total buttons found on page:", allButtons.length);
+            
+            // Let's see what data-testid attributes actually exist
+            if (allButtons.length > 0) {
+                console.log("DEBUG: EXPLORE - First few buttons:");
+                for (let i = 0; i < Math.min(5, allButtons.length); i++) {
+                    const btn = allButtons[i];
+                    const testId = btn.getAttribute('data-testid');
+                    const text = (btn.textContent || btn.innerText).substring(0, 50);
+                    console.log(`DEBUG: EXPLORE - Button ${i}: testid="${testId}", text="${text}..."`);
+                }
+            }
+            
+            // Find all button elements in the Streamlit app
+            const buttons = parent.document.querySelectorAll('button[kind="secondary"]');
+            console.log("DEBUG: HIGHLIGHT - Found", buttons.length, "secondary buttons on page");
+            
+            if (buttons.length === 0) {
+                // Also try looking for primary buttons
+                const primaryButtons = parent.document.querySelectorAll('button[kind="primary"]');
+                console.log("DEBUG: HIGHLIGHT - Found", primaryButtons.length, "primary buttons on page");
+                
+                // Let's also try some alternative selectors that might work
+                const altButtons1 = parent.document.querySelectorAll('button[kind="secondary"]');
+                const altButtons2 = parent.document.querySelectorAll('button[class*="secondary"]');
+                const altButtons3 = parent.document.querySelectorAll('button[class*="Button"]');
+                console.log("DEBUG: EXPLORE - Alternative selectors found:", altButtons1.length, altButtons2.length, altButtons3.length);
+                
+                // Add primary buttons to search
+                const allButtons = [...buttons, ...primaryButtons];
+                console.log("DEBUG: HIGHLIGHT - Total buttons to search:", allButtons.length);
+                searchAndHighlightButtons(allButtons, targetAlertId);
+            } else {
+                searchAndHighlightButtons(buttons, targetAlertId);
+            }
+        }
+
+        function searchAndHighlightButtons(buttons, targetAlertId) {
+            let foundMatch = false;
+            console.log("DEBUG: SEARCH - Searching", buttons.length, "buttons for alert ID:", targetAlertId);
+            
+            buttons.forEach((button, index) => {
+                const buttonText = button.textContent || button.innerText;
+                const buttonTitle = button.getAttribute('title') || '';
+                const buttonAriaLabel = button.getAttribute('aria-label') || '';
+                const buttonDataTestId = button.getAttribute('data-testid') || '';
+                const buttonClass = button.className || '';
+                
+                console.log(`DEBUG: SEARCH - Button ${index}:`);
+                console.log(`  Text: "${buttonText.substring(0, 80)}..."`);
+                console.log(`  Length: ${buttonText.length}`);
+                console.log(`  Title: "${buttonTitle.substring(0, 50)}..."`);
+                console.log(`  Data-testid: "${buttonDataTestId}"`);
+                console.log(`  Class: "${buttonClass}"`);
+                console.log(`  All attributes:`, Array.from(button.attributes).map(attr => `${attr.name}="${attr.value}"`));
+                console.log(`  Contains alert ID in text? ${buttonText.includes(targetAlertId)}`);
+                console.log(`  Contains alert ID in title? ${buttonTitle.includes(targetAlertId)}`);
+                
+                // Check in text, title, or aria-label
+                const foundInText = buttonText.includes(targetAlertId);
+                const foundInTitle = buttonTitle.includes(targetAlertId);
+                const foundInAriaLabel = buttonAriaLabel.includes(targetAlertId);
+                
+                console.log(`  Alert ID being searched: "${targetAlertId}"`);
+                console.log(`  Found in text: ${foundInText}, title: ${foundInTitle}, aria-label: ${foundInAriaLabel}`);
+                
+                // Look for alert ID in button text, title, or aria-label
+                if (targetAlertId && (foundInText || foundInTitle || foundInAriaLabel)) {
+                    console.log("DEBUG: HIGHLIGHT - MATCH FOUND! Button contains alert ID:", targetAlertId);
+                    // Add highlight styling
+                    button.style.backgroundColor = '#1f77b4';
+                    button.style.color = 'white';
+                    button.style.border = '2px solid #0066cc';
+                    button.style.transform = 'scale(1.02)';
+                    button.style.boxShadow = '0 0 10px rgba(31, 119, 180, 0.5)';
+                    button.setAttribute('data-highlighted', 'true');
+                    console.log("DEBUG: HIGHLIGHT - Successfully highlighted button");
+                    foundMatch = true;
+                } else {
+                    console.log(`DEBUG: SEARCH - No match for button ${index}`);
+                }
+            });
+            
+            if (!foundMatch) {
+                console.log("DEBUG: HIGHLIGHT - WARNING: No matching button found for alert ID:", targetAlertId);
+            }
+        }
+
+        function clearButtonHighlights() {
+            // Remove highlights from all previously highlighted buttons
+            const highlightedButtons = parent.document.querySelectorAll('button[data-highlighted="true"]');
+            console.log("DEBUG: HIGHLIGHT - Clearing highlights from", highlightedButtons.length, "buttons");
+            
+            highlightedButtons.forEach(button => {
+                button.style.backgroundColor = '';
+                button.style.color = '';
+                button.style.border = '';
+                button.style.transform = '';
+                button.style.boxShadow = '';
+                button.removeAttribute('data-highlighted');
+            });
+        }
+
+        cancelCaseBtn.onclick = function() {
+            hideModal();
+        };
+
+        if (foregroundFigData && foregroundFigData.data && foregroundFigData.data[0] && foregroundFigData.data[0].customdata) {
+            currentGraphGlobalIDs = foregroundFigData.data[0].customdata;
+        }
+
+        if (foregroundDiv && foregroundFigData && typeof foregroundFigData === 'object' && foregroundFigData.data) {
+            Plotly.react(foregroundDiv, foregroundFigData.data, foregroundFigData.layout, foregroundFigData.config || {editable: true});
+            
+            foregroundDiv.on('plotly_click', function(data){
+                console.log("DEBUG: 1. Node opened (plotly_click event fired).");
+                if (data.points && data.points.length > 0) {
+                    const point = data.points[0];
+                    const pointIndex = point.pointNumber;
+                    const globalId = point.customdata;
+
+                    // Immediately inform Python to pause auto-refresh by emulating a selection.
+                    if (globalId !== undefined) {
+                        waitForStreamlit(() => window.Streamlit.setComponentValue({ type: 'selection', data: [globalId] }));
+                    }
+
+                    const logDataString = currentGraphAlertData[pointIndex];
+                    if (logDataString) {
+                        showModal(logDataString);
+                    }
+                }
+            });
+
+            foregroundDiv.on('plotly_selected', function(data) {
+                selectedGlobalIDs = (data && data.points) ? data.points.map(p => p.customdata).filter(gid => gid !== undefined) : [];
+                if (window.Streamlit) {
+                    window.Streamlit.setComponentValue({ type: 'selection', data: selectedGlobalIDs });
+                }
+            });
+
+            foregroundDiv.on('plotly_deselect', function(){
+                selectedGlobalIDs = [];
+                if (window.Streamlit) {
+                    window.Streamlit.setComponentValue({ type: 'selection', data: selectedGlobalIDs });
+                }
+            });
+        } else if (foregroundDiv) {
+             Plotly.purge(foregroundDiv); 
+        }
+        window.Streamlit.setFrameHeight();
+    });
+    </script>
+</body>
+</html> 

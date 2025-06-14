@@ -1,0 +1,39 @@
+[[pages]]
+path = "login.py"
+name = "Login"
+icon = "🔒"
+
+[[pages]]
+path = "pages/chat_page.py"
+name = "Threat Intelligence"
+icon = "🔍"
+
+[[pages]]
+path = "pages/red_blue_emulator.py"
+name = "Caldera Emulator"
+icon = "🚔"
+
+[[pages]]
+path = "pages/wazuh_plotly_js_interactive.py"
+name = "Interactive Plot"
+icon = "👉"
+
+[[pages]]
+path = "pages/wazuh_plotly_js_four_graphs.py"
+name = "Rule Level Graphs"
+icon = "📊"
+
+[[pages]]
+path = "pages/wazuh_plotly_js.py"
+name = "Simple Plot"
+icon = "*️⃣"
+
+[[pages]]
+path = "pages/machine_traffic.py"
+name = "VM Traffic"
+icon = "🌐"
+
+[[pages]]
+path = "pages/snort.py"
+name = "Snort Sniffer"
+icon = "🐽"

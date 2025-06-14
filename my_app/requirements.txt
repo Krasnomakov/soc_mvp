@@ -1,0 +1,15 @@
+streamlit
+requests
+# Add other dependencies if any, e.g.:
+pandas
+numpy
+paramiko
+networkx
+matplotlib
+plotly
+streamlit-plotly-events
+sshtunnel
+torch
+
+# For mitre_page (if using MITRE ATT&CK data)
+attackcti 

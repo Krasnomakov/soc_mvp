@@ -1,1 +1,1 @@
-Research paper is private is under review. Will be announced after publishing.
+Research paper is private and is under review. Will be announced after publishing.
